@@ -7,6 +7,10 @@ include_once('./settings.php');
 
 //Mail zusammenbauen
 
+//setup envelop sender & receipint
+if ($mailfrom == "") {$mailfrom = $from;};
+if ($rcptto == "") {$rcptto = $to;};
+
 //header variablen
 if ($mailfrom == "") {$mailfrom = $from;}
 if ($rcptto == "") {$rcptto = $to;}
@@ -90,56 +94,75 @@ foreach($attach AS $key => $val) {
   $mailfile.= $filedata."\r\n";
   $mailfile.= "\r\n";
 }
+
+if ($eicar != "") {
+  $mailfile.= "--".$mime_boundary_mix."\r\n";
+  $mailfile.= "Content-Disposition: attachment;\r\n";
+  $mailfile.= "\tfilename=\"".$eicar."\";\r\n";
+  $mailfile.= "Content-Length: 68;\r\n";
+  $mailfile.= "Content-Type: ".$eicar_mime."; name=\"".$eicar."\"\r\n";
+  $mailfile.= "Content-Transfer-Encoding: base64\r\n\r\n";
+  $mailfile.= "WDVPIVAlQEFQWzRcUFpYNTQoUF4pN0NDKTd9JEVJQ0FSLVNUQU5EQVJELUFOVElWSVJVUy1URVNU\r\n";
+  $mailfile.= "LUZJTEUhJEgrSCo=\r\n";
+  $mailfile.= "\r\n";
+}
+
 $mailfile.= "--".$mime_boundary_mix."--\r\n"; 
 $mailfile.= "\r\n";
 
-echo "---------------------------".PHP_EOL;;
-echo "Sending the follwing Mail:".PHP_EOL;
-echo "---------------------------".PHP_EOL;;
+echo "---------------------------".PHP_EOL;
+if ($preview === true) {
+  echo "Preview the Mail only!".PHP_EOL;
+} else {
+  echo "Sending the follwing Mail:".PHP_EOL;
+}
+echo "---------------------------".PHP_EOL;
+echo PHP_EOL;
+echo "Envelop Sender: ". $mailfrom .PHP_EOL;
+echo "Envelop Receipient: ". $rcptto .PHP_EOL;
 echo PHP_EOL;
 echo $mailfile;
 echo PHP_EOL;
-echo "---------------------------".PHP_EOL;;
-echo "CURL output:".PHP_EOL;
-echo "---------------------------".PHP_EOL;;
+echo "---------------------------".PHP_EOL;
+if ($preview !== true) {
 
-$fp = fopen('php://memory', 'r+');
-fwrite($fp, $mailfile);
-rewind($fp);
+  echo "CURL output:".PHP_EOL;
+  echo "---------------------------".PHP_EOL;
 
-//setup envelop sender & receipint
-if ($mailfrom == "") {$mailfrom = $from;};
-if ($rcptto == "") {$rcptto = $to;};
+  $fp = fopen('php://memory', 'r+');
+  fwrite($fp, $mailfile);
+  rewind($fp);
 
-$curlsmtp = curl_init();
-curl_setopt($curlsmtp, CURLOPT_URL, $proto."://".$target.":".$port."/".$ehlo);
-curl_setopt_array($curlsmtp, [
-  CURLOPT_MAIL_FROM => "<$mailfrom>",
-  CURLOPT_MAIL_RCPT => ["<$rcptto>"],
-  CURLOPT_USE_SSL => $usessl,
-  CURLOPT_READFUNCTION => function ($curlsmtp, $fp, $length) { return fread($fp, $length);},
-  CURLOPT_INFILE => $fp,
-  CURLOPT_UPLOAD => true,
-  CURLOPT_VERBOSE => true,
-]);
-if ($user != "") {
-  curl_setopt($curlsmtp, CURLOPT_USERNAME, $user);
-  curl_setopt($curlsmtp, CURLOPT_PASSWORD, $passwd);
+  $curlsmtp = curl_init();
+  curl_setopt($curlsmtp, CURLOPT_URL, $proto."://".$target.":".$port."/".$ehlo);
+  curl_setopt_array($curlsmtp, [
+    CURLOPT_MAIL_FROM => "<$mailfrom>",
+    CURLOPT_MAIL_RCPT => ["<$rcptto>"],
+    CURLOPT_USE_SSL => $usessl,
+    CURLOPT_READFUNCTION => function ($curlsmtp, $fp, $length) { return fread($fp, $length);},
+    CURLOPT_INFILE => $fp,
+    CURLOPT_UPLOAD => true,
+    CURLOPT_VERBOSE => true,
+  ]);
+  if ($user != "") {
+    curl_setopt($curlsmtp, CURLOPT_USERNAME, $user);
+    curl_setopt($curlsmtp, CURLOPT_PASSWORD, $passwd);
+  }
+
+  $x = curl_exec($curlsmtp);
+
+  echo "---------------------------".PHP_EOL;
+  echo "CURL done with exit status:".PHP_EOL;
+  echo "---------------------------".PHP_EOL;
+
+  if ($x === false) {
+    echo curl_errno($curlsmtp) . ' = ' . curl_strerror(curl_errno($curlsmtp)) . PHP_EOL;
+  } else {
+    echo "SUCCESS" . PHP_EOL;
+  }
+
+  curl_close($curlsmtp);
+  fclose($fp);
 }
-
-$x = curl_exec($curlsmtp);
-
-echo "---------------------------".PHP_EOL;;
-echo "CURL done with exit status:".PHP_EOL;;
-echo "---------------------------".PHP_EOL;;
-
-if ($x === false) {
-  echo curl_errno($curlsmtp) . ' = ' . curl_strerror(curl_errno($curlsmtp)) . PHP_EOL;
-} else {
-  echo "SUCCESS" . PHP_EOL;
-}
-
-curl_close($curlsmtp);
-fclose($fp);
 
 ?>

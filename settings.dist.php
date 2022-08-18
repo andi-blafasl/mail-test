@@ -1,5 +1,8 @@
 <?php
 
+// preview only, not sending real mail. set to false for sending.
+$preview = true;
+
 // connection setup
 // possible smtp, smtps
 $target = "mail.server.tld";
@@ -41,6 +44,13 @@ $attach = array("mail.md");
 //$attach = array("pfad/zu/datei1.zip", "pfad/zu/datei2.png");
 //Dateien vor dem Versenden umbennen
 #attach = array("pfad/zu/alterName.zip" => "neuerName.zip");
+
+// Add EICAR Test-Virus Signature as attachment, disabled if empty
+// string is used as filename for attachment.
+//$eicar = "eicar.com"
+$eicar = "";
+// set mimetype for eicar attachment, default "application/octet-stream", maybe "text/plain"
+$eicar_mime = "application/octet-stream";
 
 // Add GTUBE for spam testing, disabled if empty
 //$gtube = "\r\nGTUBE for spam testing\r\n\r\nXJS*C4JDBQADN1.NSBN3*2IDNEN*GTUBE-STANDARD-ANTI-UBE-TEST-EMAIL*C.34X\r\n\r\n";
