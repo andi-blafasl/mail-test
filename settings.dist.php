@@ -38,6 +38,7 @@ $subject = "";
 
 // Set Markdown File for Mail Text
 $message = "mail.md";
+$html = true;
 
 // Set Attachments
 $attach = array("mail.md");

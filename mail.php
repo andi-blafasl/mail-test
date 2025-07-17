@@ -39,14 +39,18 @@ $mailfile.= "Content-Type: multipart/mixed;\r\n";
 $mailfile.= " boundary=\"".$mime_boundary_mix."\"\r\n";
 
 $mailfile.= "--".$mime_boundary_mix."\r\n";
-$mailfile.= "Content-Type: multipart/alternative;\r\n";
-$mailfile.= " boundary=\"".$mime_boundary_alt."\"\r\n";
+if ($html == true) {
+  $mailfile.= "Content-Type: multipart/alternative;\r\n";
+  $mailfile.= " boundary=\"".$mime_boundary_alt."\"\r\n";
+}
 
 //mailtext aus datei laden
 $mailtext = file_get_contents($message);
 $encoding = mb_detect_encoding($mailtext, "utf-8, iso-8859-1, windows-1252");
 
-$mailfile.= "--".$mime_boundary_alt."\r\n";
+if ($html == true) {
+  $mailfile.= "--".$mime_boundary_alt."\r\n";
+}
 $mailfile.= "Content-Type: text/plain; charset=\"$encoding\"\r\n";
 $mailfile.= "Content-Transfer-Encoding: 8bit\r\n";
 $mailfile.= "Content-Disposition: inline\r\n";
@@ -56,20 +60,22 @@ $mailfile.= $mailtext."\r\n";
 $mailfile.= "\r\n";
 
 //format Markdown to HTML
-$Parsedown = new Parsedown();
-$html = $Parsedown->text($mailtext);
-$encoding = mb_detect_encoding($html, "utf-8, iso-8859-1, windows-1252");
+if ($html == true) {
+  $Parsedown = new Parsedown();
+  $html = $Parsedown->text($mailtext);
+  $encoding = mb_detect_encoding($html, "utf-8, iso-8859-1, windows-1252");
 
-$mailfile.= "--".$mime_boundary_alt."\r\n";
-$mailfile.= "Content-Type: text/html; charset=\"$encoding\"\r\n";
-$mailfile.= "Content-Transfer-Encoding: 8bit\r\n";
-$mailfile.= "Content-Disposition: inline\r\n";
-$mailfile.= "\r\n";
-if ($gtube != "") {
-  $mailfile.= "<p>".$gtube."</p>\r\n";
+  $mailfile.= "--".$mime_boundary_alt."\r\n";
+  $mailfile.= "Content-Type: text/html; charset=\"$encoding\"\r\n";
+  $mailfile.= "Content-Transfer-Encoding: 8bit\r\n";
+  $mailfile.= "Content-Disposition: inline\r\n";
+  $mailfile.= "\r\n";
+  if ($gtube != "") {
+    $mailfile.= "<p>".$gtube."</p>\r\n";
+  }
+  $mailfile.= $html."\r\n";
+  $mailfile.= "\r\n";
 }
-$mailfile.= $html."\r\n";
-$mailfile.= "\r\n";
 
 //Dateiliste bauen
 foreach($attach AS $key => $val) {
