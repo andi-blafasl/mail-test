@@ -6,6 +6,7 @@ $preview = true;
 // connection setup
 // possible smtp, smtps
 $target = "mail.server.tld";
+$forceipv4 = false;
 $proto = "smtp";
 $port = "25";
 // ehlo hostname, if empty -> gethotname()

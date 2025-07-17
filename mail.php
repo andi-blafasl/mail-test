@@ -148,6 +148,9 @@ if ($preview !== true) {
     curl_setopt($curlsmtp, CURLOPT_USERNAME, $user);
     curl_setopt($curlsmtp, CURLOPT_PASSWORD, $passwd);
   }
+  if ($forceipv4 == true && defined('CURLOPT_IPRESOLVE') && defined('CURL_IPRESOLVE_V4')){
+    curl_setopt($curlsmtp, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+  }
 
   $x = curl_exec($curlsmtp);
 
