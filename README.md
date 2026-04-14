@@ -3,8 +3,8 @@ A PHP Script for sending Test Mails via cURL (SMTP)
 
 ## Reqirements
 
-  1. linux (tested with ubuntu 22.04)
-  2. php (tested with 8.1)
+  1. linux (tested with ubuntu 24.04) or docker
+  2. php (tested with 8.2)
   3. php-curl
 
 ## How to use
@@ -12,4 +12,4 @@ A PHP Script for sending Test Mails via cURL (SMTP)
   1. clone repositroy recursive with submodules
   2. copy *settings.dist.php* to *settings.php*
   3. modify settings.php for your needs
-  4. execute mail.php with php-cli
+  4. execute mail.php with php-cli or run docker.sh
