@@ -1,5 +1,8 @@
 <?php
 
+// increase PHP memory_limit to send bigger attachments.
+ini_set('memory_limit', '256M');
+
 // preview only, not sending real mail. set to false for sending.
 $preview = true;
 
@@ -45,7 +48,7 @@ $attach = array("mail.md");
 //Versand mehrerer Dateien, die sich im Unterordner befinden:
 //$attach = array("pfad/zu/datei1.zip", "pfad/zu/datei2.png");
 //Dateien vor dem Versenden umbennen
-#attach = array("pfad/zu/alterName.zip" => "neuerName.zip");
+//#attach = array("pfad/zu/alterName.zip" => "neuerName.zip");
 
 // Add EICAR Test-Virus Signature as attachment, disabled if empty
 // string is used as filename for attachment.
